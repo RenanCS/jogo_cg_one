@@ -1,0 +1,14 @@
+﻿  main.cpp
+c:\users\renan carvalho\documents\github\jogo_cg_one\opengl_game\opengl_game\main.cpp(76): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\renan carvalho\documents\github\jogo_cg_one\opengl_game\opengl_game\main.cpp(234): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\renan carvalho\documents\github\jogo_cg_one\opengl_game\opengl_game\main.cpp(235): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\renan carvalho\documents\github\jogo_cg_one\opengl_game\opengl_game\main.cpp(241): warning C4244: 'argument': conversion from 'float' to 'GLint', possible loss of data
+c:\users\renan carvalho\documents\github\jogo_cg_one\opengl_game\opengl_game\main.cpp(242): warning C4244: 'argument': conversion from 'float' to 'GLint', possible loss of data
+c:\users\renan carvalho\documents\github\jogo_cg_one\opengl_game\opengl_game\main.cpp(243): warning C4244: 'argument': conversion from 'float' to 'GLint', possible loss of data
+c:\users\renan carvalho\documents\github\jogo_cg_one\opengl_game\opengl_game\main.cpp(259): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\renan carvalho\documents\github\jogo_cg_one\opengl_game\opengl_game\main.cpp(260): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\renan carvalho\documents\github\jogo_cg_one\opengl_game\opengl_game\main.cpp(264): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\renan carvalho\documents\github\jogo_cg_one\opengl_game\opengl_game\main.cpp(265): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\renan carvalho\documents\github\jogo_cg_one\opengl_game\opengl_game\main.cpp(304): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  opengl_game.vcxproj -> C:\Users\Renan Carvalho\Documents\GitHub\jogo_cg_one\opengl_game\Debug\opengl_game.exe
+  opengl_game.vcxproj -> C:\Users\Renan Carvalho\Documents\GitHub\jogo_cg_one\opengl_game\Debug\opengl_game.pdb (Partial PDB)
