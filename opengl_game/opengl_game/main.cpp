@@ -1,25 +1,24 @@
-#if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
-#endif
+/*
+* OGL02Animation.cpp: 3D Shapes with animation
+*/
+#include <windows.h>  // for MS Windows
+#include <GL/glut.h>  // GLUT, include glu.h and gl.h
+#include <math.h>	//inclue math
 #include <stdio.h>
 #include <stdlib.h>
-#include <GL/glut.h>
-#include <math.h>
+#include <time.h>
 
-// Globais
-static const GLfloat cores[4][3] = {
-	0.38f, 0.58f, 0.93f, // azul
-	1.0f, 0.0f, 0.0f,    // vermelho
-	1.0f, 0.5f, 0.0f,    // selecionado
-};
-
-
+/* Global variables */
 typedef struct coord {
 	float x;
 	float y;
 	float z;
 }coord;
-
+static const GLfloat cores[4][3] = {
+	0.38f, 0.58f, 0.93f, // azul
+	1.0f, 0.0f, 0.0f,    // vermelho
+	1.0f, 0.5f, 0.0f,    // selecionado
+};
 typedef struct inimigo {
 	int vida;
 	int status; //0-vivo, 1-morto
@@ -32,25 +31,20 @@ typedef struct inimigo {
 
 }inimigo;
 
-
+char title[] = "3D Shapes with animation";
+GLfloat anglePyramid = 0.0f;  // Rotational angle for pyramid [NEW]
+GLfloat angleCube = 0.0f;     // Rotational angle for cube [NEW]
+int refreshMills = 15;        // refresh interval in milliseconds [NEW]
+int numInimigos, nivel;
+double rotate_z, rotate_y, rotate_x;
+float angle, eixoX, eixoY, eixoZ;
 struct coord cameraPos, cameraAng;
 struct inimigo inimigos[255];
-
-double rotate_z = 0.0f;
-double rotate_y = 1.0f;
-double rotate_x = 0.0f;
-int numInimigos = 10;
-int numTiros, veloTiro;
-int raioInimigo, raioBala, raioTorre;
-float angle = 0.0;
 GLfloat Zoom, passo, ratio;
 
-int checarColisao(int x, int y, int z, int p) {
 
 
-	return 1;
 
-}
 
 void drawInimigo(struct inimigo &ini) {
 	printf("\n Inicializou drawInimigo");
@@ -73,7 +67,7 @@ void drawInimigo(struct inimigo &ini) {
 		glColor3f(cores[2][0], cores[2][1], cores[2][2]);
 	}
 
-	glTranslatef(ini.pontos.x *10.0, 0, ini.pontos.z * 10.0);
+	glTranslatef(ini.pontos.x *10.0, ini.pontos.y, ini.pontos.z * 10.0);
 	glutSolidSphere(0.1f, 20, 20);
 	glPopMatrix();
 }
@@ -81,76 +75,97 @@ void drawInimigo(struct inimigo &ini) {
 void drawPilar(void) {
 
 	printf("\n Inicializou drawPilar");
+	//glPushMatrix();
+	glDisable(GL_CULL_FACE);
+	glColor4f(1.0f, 1.0f, 0.0f, 0.5);
+
+	glBegin(GL_POLYGON);
+	glLineWidth(2);
+	glVertex3f(0.5, -2.0, 0.5);
+	glVertex3f(0.5, 1.0, 0.5);
+	glVertex3f(-0.5, 1.0, 0.5);
+	glVertex3f(-0.5, -2.0, 0.5);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glLineWidth(2);
+	glVertex3f(0.5, -2.0, -0.5);
+	glVertex3f(0.5, 1.0, -0.5);
+	glVertex3f(0.5, 1.0, 0.5);
+	glVertex3f(0.5, -2.0, 0.5);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glLineWidth(2);
+	glVertex3f(-0.5, -2.0, 0.5);
+	glVertex3f(-0.5, 1.0, 0.5);
+	glVertex3f(-0.5, 1.0, -0.5);
+	glVertex3f(-0.5, -2.0, -0.5);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glLineWidth(2);
+	glVertex3f(0.5, 1.0, 0.5);
+	glVertex3f(0.5, 1.0, -0.5);
+	glVertex3f(-0.5, 1.0, -0.5);
+	glVertex3f(-0.5, 1.0, 0.5);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glLineWidth(2);
+	glVertex3f(0.5, -1.0, -0.5);
+	glVertex3f(0.5, -1.0, 0.5);
+	glVertex3f(-0.5, -1.0, 0.5);
+	glVertex3f(-0.5, -1.0, -0.5);
+	glEnd();
+
+	//glFlush();
+	//glPopMatrix();
+}
+
+void drawBase(void) {
+	printf("\n Inicializou drawPilar");
 	glPushMatrix();
 	glDisable(GL_CULL_FACE);
-	glColor3f(0.85f, 0.75f, 0.85f);
-	// Lado multicolorido - FRENTE
-	glLineWidth(2);
-	glVertex3f(-0.5, -0.5, -0.5);       // P1
-	glVertex3f(-0.5, 0.5, -0.5);       // P2
-	glVertex3f(0.5, 0.5, -0.5);       // P3
-	glVertex3f(0.5, -0.5, -0.5);       // P4
+
+	//base
+	glBegin(GL_QUADS);
+	glColor4f(0.0f, 1.0f, 0.0f, 0.5);
+	glVertex3f(eixoX, -eixoY, eixoZ);
+	glVertex3f(-eixoX, -eixoY, eixoZ);
+	glVertex3f(-eixoX, -eixoY, -eixoZ);
+	glVertex3f(eixoX, -eixoY, -eixoZ);
 	glEnd();
 
-	// Lado branco - TRASEIRA
-	glBegin(GL_POLYGON);
-	glLineWidth(2);
-	glVertex3f(0.5, -0.5, 0.5);
-	glVertex3f(0.5, 0.5, 0.5);
-	glVertex3f(-0.5, 0.5, 0.5);
-	glVertex3f(-0.5, -0.5, 0.5);
+
+	glBegin(GL_QUADS);
+	glColor4f(0.0f, 5.0f, 0.0f, 0.1);
+	glVertex3f(-eixoX, -eixoY, eixoZ);    // Top Right Of The Quad (Left)
+	glVertex3f(-eixoX, eixoY, eixoZ);    // Top Left Of The Quad (Left)
+	glVertex3f(-eixoX, eixoY, -eixoZ);    // Bottom Left Of The Quad (Left)
+	glVertex3f(-eixoX, -eixoY, -eixoZ);    // Bottom Right Of The Quad (Left)
 	glEnd();
 
-	// Lado roxo - DIREITA
-	glBegin(GL_POLYGON);
-	glLineWidth(2);
-	glVertex3f(0.5, -0.5, -0.5);
-	glVertex3f(0.5, 0.5, -0.5);
-	glVertex3f(0.5, 0.5, 0.5);
-	glVertex3f(0.5, -0.5, 0.5);
+	glBegin(GL_QUADS);
+	glColor4f(0.0f, 5.0f, 0.0f, 0.1);
+	glVertex3f(eixoX, eixoY, -eixoZ);    // Top Right Of The Quad (Right)
+	glVertex3f(eixoX, eixoY, eixoZ);    // Top Left Of The Quad (Right)
+	glVertex3f(eixoX, -eixoY, eixoZ);    // Bottom Left Of The Quad (Right)
+	glVertex3f(eixoX, -eixoY, -eixoZ);    // Bottom Right Of The Quad (Right) 
 	glEnd();
 
-	// Lado verde - ESQUERDA
-	glBegin(GL_POLYGON);
-	glLineWidth(2);
-	glVertex3f(-0.5, -0.5, 0.5);
-	glVertex3f(-0.5, 0.5, 0.5);
-	glVertex3f(-0.5, 0.5, -0.5);
-	glVertex3f(-0.5, -0.5, -0.5);
-	glEnd();
-
-	// Lado azul - TOPO
-	glBegin(GL_POLYGON);
-	glLineWidth(2);
-	glVertex3f(0.5, 0.5, 0.5);
-	glVertex3f(0.5, 0.5, -0.5);
-	glVertex3f(-0.5, 0.5, -0.5);
-	glVertex3f(-0.5, 0.5, 0.5);
-	glEnd();
-
-	// Lado vermelho - BASE
-	glBegin(GL_POLYGON);
-	glLineWidth(2);
-	glVertex3f(0.5, -0.5, -0.5);
-	glVertex3f(0.5, -0.5, 0.5);
-	glVertex3f(-0.5, -0.5, 0.5);
-	glVertex3f(-0.5, -0.5, -0.5);
+	glBegin(GL_QUADS);
+	glColor4f(0.0f, 5.0f, 0.0f, 0.1);
+	glVertex3f(eixoX, -eixoY, -eixoZ);    // Top Right Of The Quad (Back)
+	glVertex3f(-eixoX, -eixoY, -eixoZ);    // Top Left Of The Quad (Back)
+	glVertex3f(-eixoX, eixoY, -eixoZ);    // Bottom Left Of The Quad (Back)
+	glVertex3f(eixoX, eixoY, -eixoZ);    // Bottom Right Of The Quad (Back)
 	glEnd();
 
 	glFlush();
-
 	glPopMatrix();
-}
 
-void drawPiso(void) {
-	printf("\n Inicializou drawPiso");
-	glColor3f(0.5f, 1.0f, 0.0f);
-	glBegin(GL_QUADS);
-	glVertex3f(-100.0f, 0.0f, -100.0f);
-	glVertex3f(-100.0f, 0.0f, 100.0f);
-	glVertex3f(100.0f, 0.0f, 100.0f);
-	glVertex3f(100.0f, 0.0f, -100.0f);
-	glEnd();
+
 
 }
 
@@ -164,67 +179,35 @@ void montarInimigos(void) {
 	}
 }
 
-void montarTorre(void) {
-	printf("\n Inicializou montarTorre");
-	drawPilar();
-}
+void teclasEspeciais(int key, int x, int y) {
+	float fraction = 0.1;
 
-void montarPiso(void) {
-	printf("\n Inicializou montarPiso");
-	//Define propriedades do objeto
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	// Mudar visão da câmera
-	/*
-	1- posição da camera
-	2- o ponto que estamos olhando
-	3-  inclinar a câmera
-	*/
-	gluLookAt(rotate_x, rotate_y, rotate_z,
-		rotate_x + cameraAng.x, rotate_y + cameraAng.y, rotate_z + cameraAng.z,
-		0.0f, 1.0f, 0.0f);
-	//desenha piso
-	drawPiso();
+	switch (key) {
+	case GLUT_KEY_LEFT: // gira a câmera para esquerda
+		angle -= 0.02f;
+		cameraAng.x = sin(angle);
+		cameraAng.z = -cos(angle);
+		break;
+	case GLUT_KEY_RIGHT: // gira a câmera para direita
+		angle += 0.02f;
+		cameraAng.x = sin(angle);
+		cameraAng.z = -cos(angle);
+		break;
+	case GLUT_KEY_UP:
+		printf("\n x %f", rotate_x);
+		rotate_x += cameraAng.x  * fraction;
+		rotate_z += cameraAng.z * fraction;
+		break;
+	case GLUT_KEY_DOWN:
+		printf("\n z %f", rotate_z);
+		rotate_x -= cameraAng.x  * fraction;
+		rotate_z -= cameraAng.z * fraction;
+		break;
+	case GLUT_KEY_F5:
+		break;
+	}
 
-	glutSwapBuffers();
-
-}
-
-void alteraTamanhoJanela(GLsizei w, GLsizei h) {
-	if (h == 0) h = 1;// Para previnir uma divisão por zero
-	ratio = (GLfloat)w / (GLfloat)h;// Calcula a correção de aspecto
-	glViewport(0, 0, w, h);// Especifica o tamanho da viewport
-}
-
-void camera(void) {
-	printf("\n Inicializou camera");
-	//Define propriedades da câmera
-	glMatrixMode(GL_PROJECTION);
-	//referência para o ponto original
-	glLoadIdentity();
-	//perspectiva imagem
-	gluPerspective(Zoom, ratio, 1.01, 2000);
-}
-
-void desenha(void) {
-	printf("\n Inicializou desenha");
-	glClearStencil(0); // this is the default value
-					   //Limpa o buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	//Propriedades camera
-	camera();
-	//piso
-	montarPiso();
-	//Desenha Torre
-	montarTorre();
-
-	glEnable(GL_STENCIL_TEST);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-	//Desenhar inimigos
-	montarInimigos();
-
-	glutSwapBuffers();
+	glutPostRedisplay();
 }
 
 void OnMouseClick(int button, int state, int x, int y) {
@@ -250,96 +233,109 @@ void OnMouseClick(int button, int state, int x, int y) {
 
 }
 
-void teclasEspeciais(int key, int x, int y) {
-	float fraction = 0.2f;
+void initGL() {
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color to black and opaque
+	glClearDepth(1.0f);                   // Set background depth to farthest
+	glEnable(GL_DEPTH_TEST);   // Enable depth testing for z-culling
+	glDepthFunc(GL_LEQUAL);    // Set the type of depth-test
+	glShadeModel(GL_SMOOTH);   // Enable smooth shading
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
 
-	switch (key) {
-	case GLUT_KEY_LEFT: // gira a câmera para esquerda
-		angle -= 0.02f;
-		cameraAng.x = sin(angle);
-		cameraAng.z = -cos(angle);
-		break;
-	case GLUT_KEY_RIGHT: // gira a câmera para direita
-		angle += 0.02f;
-		cameraAng.x = sin(angle);
-		cameraAng.z = -cos(angle);
-		break;
-	case GLUT_KEY_UP:
-		rotate_x += cameraAng.x  * fraction;
-		rotate_z += cameraAng.z * fraction;
-		break;
-	case GLUT_KEY_DOWN:
-		rotate_x -= cameraAng.x  * fraction;
-		rotate_z -= cameraAng.z * fraction;
-		break;
-	case GLUT_KEY_F1: // Zoom-in
-		if (Zoom >= 10) {
-			Zoom -= 3;
-			rotate_y -= cameraAng.y  * fraction;
-		}
-
-		break;
-	case GLUT_KEY_F2: 	// Zoom-out
-		if (Zoom <= 300) {
-			Zoom += 3;
-			rotate_y += cameraAng.y  * fraction;
-		}
-		break;
-	}
-	glutPostRedisplay();
-}
-
-void ini(void) {
+	rotate_z = 10.0f;
+	rotate_y = 1.0f;
+	rotate_x = -0.16f;
+	angle = 0.0;
 	Zoom = 60;
 	passo = 0;
 	ratio = 0;
-	numTiros = 0;
-	veloTiro = 10;
+	numInimigos = 10;
+	eixoX = 5.0;
+	eixoY = 2.0;
+	eixoZ = 3.0;
+
+
 
 	for (int i = 0; i < numInimigos; i++) {
 		float x = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 		float y = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 		float z = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-		//Verifica colisao
-		if (checarColisao(x, y, z, i)) {
-			inimigos[i].pontos.x = x;
-			inimigos[i].pontos.y = y;
-			inimigos[i].pontos.z = z;
-		}
+
+		inimigos[i].pontos.x = x;
+		inimigos[i].pontos.y = y;
+		inimigos[i].pontos.z = z;
+
 		inimigos[i].nivel = 1;
 		inimigos[i].selecionado = false;
 		inimigos[i].id = i;
 
 	}
 
-	printf("\n Inicializou variaveis");
 }
 
-int main(void) {
-	int argc = 0;
-	char *argv[] = { (char *)"gl", 0 };
+void display() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
+	glMatrixMode(GL_MODELVIEW);     // To operate on model-view matrix
 
-	glutInit(&argc, argv);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
 
-	ini();
-	//Mais dee um buffer para animações
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-	//Tamanho da janela
-	glutInitWindowSize(500, 500);
-	//Tamanho da tela centralizada dividida por 2
-	glutInitWindowPosition(320, 150);
-	//Titulo da tela
-	glutCreateWindow("Aplicação OPENGL");
-	//Função de callback - toda ação realizada com a tela
-	glutDisplayFunc(desenha);
-	//Redimenciona
-	glutReshapeFunc(alteraTamanhoJanela);
-	//Eventos de mouse
-	glutMouseFunc(OnMouseClick);
-	//Eventos teclado
-	glutSpecialFunc(teclasEspeciais);
-	//Sistema entra em loop
-	glutMainLoop();
+	// Render a color-cube consisting of 6 quads with different colors
+	glLoadIdentity();                 // Reset the model-view matrix
+	gluLookAt(
+		rotate_x, rotate_y, rotate_z,//visao da camera
+		rotate_x + cameraAng.x, rotate_y + cameraAng.y, rotate_z + cameraAng.z, // coordenadas do objeto
+		0.0f, 1.0f, 0.0f);
 
+	//Piso
+	drawBase();
+	//Pilar
+	drawPilar();
+
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+	//Desenhar inimigos
+	montarInimigos();
+
+
+	glutSwapBuffers();
+
+}
+
+void timer(int value) {
+	glutPostRedisplay();      // Post re-paint request to activate display()
+	glutTimerFunc(refreshMills, timer, 0); // next timer call milliseconds later
+}
+
+void reshape(GLsizei width, GLsizei height) {
+	GLfloat aspect = (GLfloat)width / (GLfloat)height;
+
+	// Set the viewport to cover the new window
+	glViewport(0, 0, width, height);
+
+	// Set the aspect ratio of the clipping volume to match the viewport
+	glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
+	glLoadIdentity();             // Reset
+								  // Enable perspective projection with fovy, aspect, zNear and zFar
+	gluPerspective(45.0f, aspect, 0.1f, 100.0f);
+}
+
+/* Main function: GLUT runs as a console application starting at main() */
+int main(int argc, char** argv) {
+	glutInit(&argc, argv);            // Initialize GLUT
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA); // Enable double buffered mode
+	glutInitWindowSize(640, 480);   // Set the window's initial width & height
+	glutInitWindowPosition(50, 50); // Position the window's initial top-left corner
+	glutCreateWindow("T2 OPENGL");          // Create window with the given title
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glutDisplayFunc(display);       // Register callback handler for window re-paint event
+	glutReshapeFunc(reshape);       // Register callback handler for window re-size event
+	glutSpecialFunc(teclasEspeciais); //Eventos teclado	
+	glutMouseFunc(OnMouseClick);	  //Eventos de mouse
+	initGL();                       // Our own OpenGL initialization
+	glutTimerFunc(0, timer, 0);     // First timer call immediately [NEW]
+	glutMainLoop();                 // Enter the infinite event-processing loop
 	return 0;
 }
